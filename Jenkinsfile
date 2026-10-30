@@ -7,6 +7,10 @@ pipeline {
     tools {
         maven "maven-3.10"
     }
+    parameters {
+        choice(name: 'VERSION', choices: ['1.1.0', '1.2.0', '1.3.0'], description:'version to deploy on prod')
+        booleanParam(name: 'executeTests', defaultValue: true, description: '')
+    }
 
     stages {
         stage("build") {
@@ -19,8 +23,7 @@ pipeline {
         stage("test") {
             when {
                 expression {
-                     echo "GIT_BRANCH is ${env.GIT_BRANCH}"
-                     return env.GIT_BRANCH == 'origin/feature/jenkins-jobs'
+                     params.executeTests
                 }
             }
             steps {
@@ -32,13 +35,7 @@ pipeline {
         stage("deploy") {
             steps {
                 echo "deploying the application"
-                echo 'deploying with $SERVER_CREDENTIALS_USR'
-
-                withCredentials([
-                    usernamePassword(credentialsId: 'server-credentials', usernameVariable: 'USER', passwordVariable: 'PASS')
-                ]) {
-                    sh 'echo "deploying with $USER and $PASS"'
-                }
+                echo 'deploying version ${params.VERSION}'
             }
         }
     }
