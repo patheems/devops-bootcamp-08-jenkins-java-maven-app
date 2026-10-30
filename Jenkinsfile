@@ -19,25 +19,25 @@ pipeline {
         stage("test") {
             when {
                 expression {
-                    echo "BRANCH_NAME is ${env.BRANCH_NAME}"
-                    return env.BRANCH_NAME == 'feature/jenkins-jobs'
+                     echo "GIT_BRANCH is ${env.GIT_BRANCH}"
+                     return env.GIT_BRANCH == 'origin/feature/jenkins-jobs'
                 }
             }
             steps {
                 echo "testing the application"
-                echo "mvn -version"
+                sh 'mvn -version'
             }
         }
 
         stage("deploy") {
             steps {
                 echo "deploying the application"
-                echo "deploying with ${SERVER_CREDENTIALS}"
+                echo 'deploying with $SERVER_CREDENTIALS_USR'
 
                 withCredentials([
-                    usernamePassword(credentialsId: 'server-credentials', usernameVariable: USER, passwordVariable: PWD)
+                    usernamePassword(credentialsId: 'server-credentials', usernameVariable: 'USER', passwordVariable: 'PASS')
                 ]) {
-                    sh 'some script ${USER} ${PWD}'
+                    sh 'echo "deploying with $USER and $PASS"'
                 }
             }
         }
