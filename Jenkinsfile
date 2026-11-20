@@ -24,10 +24,12 @@ pipeline {
             }
         }
 
-        stage("build image") {
+        stage("build and push image") {
             steps {
                 script {
-                    buildImage 'justphit/demo-app:jma-3.0'
+                    buildImage 'justphit/demo-app:jma-4.0'
+                    dockerLogin()
+                    dockerPush 'justphit/demo-app:jma-4.0'
                 }
             }
         }
